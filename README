@@ -19,11 +19,10 @@ From a linux terminal (if you have a problem using /dev/loop0, it may already be
 Now, on your phone.. from an adb shell or terminal
 	tar -c /system/* > /sdcard/factoryfs.tar
 	
-Then copy the tar file to the system directory you have on the pc..
-From the linux terminal, inside the system directory...	
-	sudo tar xvf factoryfs.tar
+Then copy the tar file to the make_ext4 directory you have on the pc..
+From the linux terminal...
+	sudo tar xvf factoryfs.tar -C ./system
 	sudo rm factoryfs.tar
-	cd ..
 	sudo ./bin/mkuserimg.sh -s system factoryfs.img ext4 /system 503mb
 	sudo umount ./system
 	sudo losetup -d /dev/loop0
