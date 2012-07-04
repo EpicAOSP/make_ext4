@@ -7,7 +7,7 @@ From a linux terminal
 	git clone https://github.com/EpicAOSP/make_ext4 -b master
 	mkdir system
 
-From a linux terminal
+From a linux terminal (if you have a problem using /dev/loop0, it may already be used, you can use /dev/loop1 or /dev/loop2)
 	dd if=/dev/zero of=temp.img bs=4096 count=122803
 	sudo losetup /dev/loop0 temp.img
 	sudo mkfs.ext4 /dev/loop0
