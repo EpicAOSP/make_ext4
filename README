@@ -17,7 +17,7 @@ From a linux terminal (if you have a problem using /dev/loop0, it may already be
 	sudo rm big_zero
 	
 Now, on your phone.. from an adb shell or terminal
-	tar -H ustar -c /system/* > /sdcard/factoryfs.tar
+	tar -c /system/* > /sdcard/factoryfs.tar
 	
 Then copy the tar file to the system directory you have on the pc..
 From the linux terminal, inside the system directory...	
