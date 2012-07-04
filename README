@@ -5,6 +5,7 @@ How to create a flashable EXT4 img
 
 From a linux terminal
 	git clone https://github.com/EpicAOSP/make_ext4 -b master
+	mkdir system
 
 From a linux terminal
 	dd if=/dev/zero of=temp.img bs=4096 count=122803
