@@ -3,33 +3,78 @@ make_ext4
 
 How to create a flashable EXT4 img
 
-From a linux terminal
+First we will clone the files needed from this git repository, from a terminal in linux, type:
 	git clone https://github.com/EpicAOSP/make_ext4 -b master
+then switch to the directory where the files are stored, type:
 	cd make_ext4
+now lets make a directory to store the factoryfs files we are going to be using, type:
 	mkdir system
 	
-Now, on your phone.. from an adb shell or terminal
+Now, let's get the needed files from your phone. You can do this from an adb shell, or using a terminal app.
+To make it on the internal sd on Touchwiz or external on CM9 type:
 	tar -c /system/* > /sdcard/factoryfs.tar
-	
-Then copy the tar file to the make_ext4 directory you have on the pc..
-From the linux terminal...
-	tar xvf factoryfs.tar -C ./system
-	rm factoryfs.tar
-	./bin/mkuserimg.sh -s system factoryfs.img ext4 /system 503mb
-	
-After that you will have a flashable, sparse ext4 image in you directory
-called factoryfs.img
 
-To edit it again, from a linux terminal...
-	./bin/simg2img factoryfs.img temp.img
-	rm factoryfs.img
-	sudo losetup /dev/loop0 temp.img
-	sudo mount -t ext4 /dev/loop0 ./system
-	
-Make your changes in the system directory, then... in a linux terminal..
+For external on Touchwiz, it would be:
+	tar -c /system/* > /sdcard/external_sd/factoryfs.tar
+
+For internal on CM9/AOSP it would be:
+	tar -c /system/* > /emmc/factoryfs.tar
+
+Now we need to copy that file to the pc, to do that, there are a couple of options.. one of course,
+is to take out your SD Card and put it in your PC and transfer the file. That's a hassle, so I'll cover
+the adb way here. Be sure to replace the path to factoryfs.tar with wherever you actually
+put it in the last step. Connect your phone to the PC with USB Debugging on. And from the make_ext4 directory
+in a linux terminal, type:
+	adb pull /sdcard/factoryfs.tar
+
+Now that we have the file from the phone on the PC, let's extract them into the system folder we made earlier.
+	tar xvf factoryfs.tar -C system
+
+And since we are done we can delete the factoryfs.tar file, though this is not necessary..
+	rm factoryfs.tar
+
+Now that we have extracted the files into the system folder, we are going to run a script, that makes a sparse ext4
+image of exactly 503mb named factoryfs.img, thats to be mounted on /system. Sparse is important, because what that does,
+is makes a 503mb img much smaller, because the empty space used to make the img 503mb isnt filled with padding. 
+Tech info:
+	"a sparse file is a type of computer file that attempts to use file system space more
+	 efficiently when blocks allocated to the file are mostly empty. This is achieved by
+	 writing brief information (metadata) representing the empty blocks to disk instead
+	 of the actual "empty" space which makes up the block, using less disk space. The full
+	 block size is written to disk as the actual size only when the block contains "real"
+	 (non-empty) data."
+From your linux terminal, in the make_ext4 directory, type:
 	./bin/mkuserimg.sh -s system factoryfs.img ext4 /system 503mb
+	
+After that you will have a flashable, sparse ext4 image in your directory named factoryfs.img.
+
+Now should you, in the future, want to edit this img instead of creating a new one, I'll go over the steps with you.
+Place the factoryfs.img that you want to edit back into the make_ext4 directory. Then we will need to un-sparsify
+(is that really a word?) it by typing:
+	./bin/simg2img factoryfs.img temp.img
+At this point, you don't need the factoryfs.img anymore, so you can delete it by typing: 
+	rm factoryfs.img		(optional, but you atleast need to rename or move it)
+Now we will assign that img to a loop device on the system, in this example I use loop0, but on most dualboot systems
+loop0 is used, you can use any loop# that is available to you, it doesnt matter. From your linux terminal, in the make_ext4
+directory type:
+	sudo losetup /dev/loop0 temp.img
+Now we need to mount that device we just assigned the img to. We should run it as superuser (sudo), mount it as ext4 (-t ext4),
+and we want to mount it to the system directory inside our current directory (./system). type: 	
+	sudo mount -t ext4 /dev/loop0 ./system
+
+You've gotten this far.. you're almost done.. you should now have your system files in make_ext4/system.
+Go ahead and make any changes you need to make, be careful about permissions.. remember android is linux based and relies
+heavily on permissions.
+When you are done, we need to turn that system directory back into a sparse ext4 img.. in a linux terminal, from the make_ext4
+directory, type:
+	./bin/mkuserimg.sh -s system factoryfs.img ext4 /system 503mb
+You can go ahead and unmount the files now.
 	sudo umount ./system
+And detach the image from that loop device..
 	sudo losetup -d /dev/loop0
+And, delete the unsparse ext4 image... or you can save that if you would like, as it does have your changes, but remember
+its not flashable, but saving it will mean you only have to bind it to a loop device and mount it, then make it sparse
+each time you want to make changes..
 	rm temp.img
 	
-Done..
+Now at this point, you are either extremely bored.. or you have a flashable ext4 image.. hopefully the latter..
