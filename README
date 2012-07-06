@@ -12,13 +12,13 @@ now lets make a directory to mount the factoryfs file we are going to be using, 
 	
 Now, let's get the needed files from your phone. You can do this from an adb shell, or using a terminal app.
 To make it on the internal sd on Touchwiz or external on CM9 type:
-	dd if=/dev/block/mmcblk0p9 of=/sdcard/cache.rfs bs=4096 > /sdcard/factoryfs_orig.img
+	dd if=/dev/block/mmcblk0p9 of=/sdcard/factoryfs_orig.img bs=4096
 
 For external on Touchwiz, it would be:
-	dd if=/dev/block/mmcblk0p9 of=/sdcard/cache.rfs bs=4096 > /sdcard/external_sd/factoryfs_orig.img
+	dd if=/dev/block/mmcblk0p9 of=/sdcard/external_sd/factoryfs_orig.img bs=4096
 
 For internal on CM9/AOSP it would be:
-	dd if=/dev/block/mmcblk0p9 of=/sdcard/cache.rfs bs=4096 > /emmc/factoryfs_orig.img
+	dd if=/dev/block/mmcblk0p9 of=/emmc/factoryfs_orig.img bs=4096
 
 Now we need to copy that file to the pc, to do that, there are a couple of options.. one of course,
 is to take out your SD Card and put it in your PC and transfer the file. That's a hassle, so I'll cover
