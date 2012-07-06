@@ -7,33 +7,34 @@ First we will clone the files needed from this git repository, from a terminal i
 	git clone https://github.com/EpicAOSP/make_ext4 -b master
 then switch to the directory where the files are stored, type:
 	cd make_ext4
-now lets make a directory to store the factoryfs files we are going to be using, type:
+now lets make a directory to mount the factoryfs file we are going to be using, type:
 	mkdir system
 	
 Now, let's get the needed files from your phone. You can do this from an adb shell, or using a terminal app.
 To make it on the internal sd on Touchwiz or external on CM9 type:
-	tar -c /system/* > /sdcard/factoryfs.tar
+	dd if=/dev/block/mmcblk0p9 of=/sdcard/cache.rfs bs=4096 > /sdcard/factoryfs_orig.img
 
 For external on Touchwiz, it would be:
-	tar -c /system/* > /sdcard/external_sd/factoryfs.tar
+	dd if=/dev/block/mmcblk0p9 of=/sdcard/cache.rfs bs=4096 > /sdcard/external_sd/factoryfs_orig.img
 
 For internal on CM9/AOSP it would be:
-	tar -c /system/* > /emmc/factoryfs.tar
+	dd if=/dev/block/mmcblk0p9 of=/sdcard/cache.rfs bs=4096 > /emmc/factoryfs_orig.img
 
 Now we need to copy that file to the pc, to do that, there are a couple of options.. one of course,
 is to take out your SD Card and put it in your PC and transfer the file. That's a hassle, so I'll cover
-the adb way here. Be sure to replace the path to factoryfs.tar with wherever you actually
+the adb way here. Be sure to replace the path to factoryfs.img with wherever you actually
 put it in the last step. Connect your phone to the PC with USB Debugging on. And from the make_ext4 directory
 in a linux terminal, type:
-	adb pull /sdcard/factoryfs.tar
+	adb pull /sdcard/factoryfs_orig.img
 
-Now that we have the file from the phone on the PC, let's extract them into the system folder we made earlier.
-	tar xvf factoryfs.tar -C system
+Now lets mount that img to our system directory.. 
+First we need to assign our img to a loop device, the loop number doesn't matter, only that it't available, most dual
+boot machines already use loop0, so if its in use, try loop1.. in your linux terminal, from the make_ext4 directory type..
+	sudo losetup /dev/loop0 ./factoryfs_orig.img
+Now let's mount our loop device as ext4 in the system folder..
+	sudo mount -t ext4 /dev/loop0 ./system
 
-And since we are done we can delete the factoryfs.tar file, though this is not necessary..
-	rm factoryfs.tar
-
-Now that we have extracted the files into the system folder, we are going to run a script, that makes a sparse ext4
+Now that we have mounted the files into the system folder, we are going to run a script, that makes a sparse ext4
 image of exactly 503mb named factoryfs.img, thats to be mounted on /system. Sparse is important, because what that does,
 is makes a 503mb img much smaller, because the empty space used to make the img 503mb isnt filled with padding. 
 Tech info:
