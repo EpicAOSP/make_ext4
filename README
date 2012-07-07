@@ -34,9 +34,14 @@ boot machines already use loop0, so if its in use, try loop1.. in your linux ter
 Now let's mount our loop device as ext4 in the system folder..
 	sudo mount -t ext4 /dev/loop0 ./system
 
-Now that we have mounted the files into the system folder, we are going to run a script, that makes a sparse ext4
-image of exactly 503mb named factoryfs.img, thats to be mounted on /system. Sparse is important, because what that does,
-is makes a 503mb img much smaller, because the empty space used to make the img 503mb isnt filled with padding. 
+Now before we make our image, we need to fill the image to the end with something, to replace the junk padding it currently
+has from the way it was pulled. We will do that by creating an image, and wiping it. From your linux terminal in the system
+directory under make_ext4, type:
+	sudo ./bin/mkuserimg.sh -w system factoryfs.img ext4 system 503mb
+
+Now that we have mounted the files into the system folder, and prepared them, we are going to run a script, that makes a
+sparse ext4 image of exactly 503mb named factoryfs.img, thats to be mounted on /system. Sparse is important, because what that
+does, is makes a 503mb img much smaller, because the empty space used to make the img 503mb isnt filled with padding. 
 Tech info:
 	"a sparse file is a type of computer file that attempts to use file system space more
 	 efficiently when blocks allocated to the file are mostly empty. This is achieved by
@@ -45,7 +50,7 @@ Tech info:
 	 block size is written to disk as the actual size only when the block contains "real"
 	 (non-empty) data."
 From your linux terminal, in the make_ext4 directory, type:
-	./bin/mkuserimg.sh -s system factoryfs.img ext4 /system 503mb
+	sudo ./bin/mkuserimg.sh -s system factoryfs.img ext4 system 503mb
 	
 After that you will have a flashable, sparse ext4 image in your directory named factoryfs.img.
 
@@ -68,7 +73,7 @@ Go ahead and make any changes you need to make, be careful about permissions.. r
 heavily on permissions.
 When you are done, we need to turn that system directory back into a sparse ext4 img.. in a linux terminal, from the make_ext4
 directory, type:
-	./bin/mkuserimg.sh -s system factoryfs.img ext4 /system 503mb
+	sudo ./bin/mkuserimg.sh -s system factoryfs.img ext4 system 503mb
 You can go ahead and unmount the files now.
 	sudo umount ./system
 And detach the image from that loop device..
@@ -79,3 +84,8 @@ each time you want to make changes..
 	rm temp.img
 	
 Now at this point, you are either extremely bored.. or you have a flashable ext4 image.. hopefully the latter..
+
+
+PROTIP:
+You can add the -J option to mkuserimg.sh to disable journaling on your ext4 image..
+ALternatively, you can use the -z option to gzip the image...
