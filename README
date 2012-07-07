@@ -7,8 +7,6 @@ First we will clone the files needed from this git repository, from a terminal i
 	git clone https://github.com/EpicAOSP/make_ext4 -b master
 then switch to the directory where the files are stored, type:
 	cd make_ext4
-now lets make a directory to mount the factoryfs file we are going to be using, type:
-	mkdir system
 	
 Now, let's get the needed files from your phone. You can do this from an adb shell, or using a terminal app.
 To make it on the internal sd on Touchwiz or external on CM9 type:
