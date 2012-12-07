@@ -37,6 +37,10 @@ has from the way it was pulled. We will do that by creating an image, and wiping
 directory under make_ext4, type:
 	sudo ./bin/mkuserimg.sh -w system factoryfs.img ext4 system 503mb
 
+(Edit 12/7/2012 Garwynn) 
+	If you have problems with the above command use the following alternative
+	make_ext4fs -l 512mb -f -a system factoryfs.img system
+
 Now that we have mounted the files into the system folder, and prepared them, we are going to run a script, that makes a
 sparse ext4 image of exactly 503mb named factoryfs.img, thats to be mounted on /system. Sparse is important, because what that
 does, is makes a 503mb img much smaller, because the empty space used to make the img 503mb isnt filled with padding. 
@@ -49,6 +53,11 @@ Tech info:
 	 (non-empty) data."
 From your linux terminal, in the make_ext4 directory, type:
 	sudo ./bin/mkuserimg.sh -s system factoryfs.img ext4 system 503mb
+
+(Edit 12/7/2012 Garwynn) 
+	If you used the above alternative then use the same command but change -f to -s:
+	make_ext4fs -l 512mb -s -a system factoryfs.img system
+	This will make your image sparse.
 	
 After that you will have a flashable, sparse ext4 image in your directory named factoryfs.img.
 
@@ -87,3 +96,5 @@ Now at this point, you are either extremely bored.. or you have a flashable ext4
 PROTIP:
 You can add the -J option to mkuserimg.sh to disable journaling on your ext4 image..
 ALternatively, you can use the -z option to gzip the image...
+
+Sprint GN2 Tip: System image is system.img, size 1792MB.
